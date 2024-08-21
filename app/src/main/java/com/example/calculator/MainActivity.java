@@ -117,7 +117,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void setOperator(String op) {
 
+
+        if(dispequation.isEmpty()){
+
+            Toast.makeText(MainActivity.this, "MathError ", Toast.LENGTH_SHORT).show();
+            return;
+
+        }
+
         char lastChar = dispequation.charAt(dispequation.length() - 1);
+
+
 
 
         if(lastChar == '+' || lastChar == '-' || lastChar == '*' || lastChar == '/')

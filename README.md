@@ -16,7 +16,7 @@ The Android Calculator is a simple and functional calculator app designed for An
 
 <img src="screenshots/screenshots1.png" alt="Home Screen" width="400" height="800"/>
 <br><br>
-<br><br>
+<br>
 <img src="screenshots/screenshots2.png" alt="Calculator Operations" width="400" height="800/>
 
 

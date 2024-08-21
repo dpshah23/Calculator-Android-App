@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -106,8 +107,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setOperator(String op) {
+
+        char lastChar = dispequation.charAt(dispequation.length() - 1);
+
+
+        if(lastChar == '+' || lastChar == '-' || lastChar == '*' || lastChar == '/')
+        {
+            Toast.makeText(MainActivity.this, "Math Error...", Toast.LENGTH_SHORT).show();
+        }
+        else{
+
         dispequation+=op;
         display.setText(dispequation);
+    }
     }
 
 }

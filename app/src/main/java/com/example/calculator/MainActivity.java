@@ -2,6 +2,7 @@ package com.example.calculator;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,7 +13,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Stack;
+
 public class MainActivity extends AppCompatActivity {
+
+
 
     TextView display;
 
@@ -83,15 +88,19 @@ public class MainActivity extends AppCompatActivity {
         divide.setOnClickListener(v -> setOperator("/"));
         percentage.setOnClickListener(v -> setOperator("%"));
 
-        clear.setOnClickListener(v -> {
-            display.setText("");
-        });
+        clear.setOnClickListener(v -> clearfull());
 
         del.setOnClickListener(v -> deleteLastchar());
+
+        equal.setOnClickListener(v -> CalculateResults());
 
 
     }
 
+    private  void clearfull(){
+        dispequation="";
+        display.setText("");
+    }
     private void deleteLastchar(){
 
         if (!dispequation.isEmpty()) {
@@ -120,6 +129,121 @@ public class MainActivity extends AppCompatActivity {
         dispequation+=op;
         display.setText(dispequation);
     }
+    }
+
+    private void CalculateResults() {
+        try {
+            double result = solveEquation(dispequation);
+            display.setText(String.valueOf(result));
+            dispequation = String.valueOf(result);
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, "Math Error...", Toast.LENGTH_SHORT).show();
+            Log.e("Calculator", "Error in calculation", e);
+        }
+    }
+
+    private double solveEquation(String equation) {
+
+        String postfix = infixToPostfix(equation);
+
+        return evaluatePostfix(postfix);
+    }
+
+    private String infixToPostfix(String equation) {
+        StringBuilder output = new StringBuilder();
+        Stack<Character> operators = new Stack<>();
+
+        for (int i = 0; i < equation.length(); i++) {
+            char c = equation.charAt(i);
+
+
+            if (Character.isDigit(c) || c == '.') {
+                output.append(c);
+            } else {
+                output.append(' ');
+
+
+                while (!operators.isEmpty() && precedence(operators.peek()) >= precedence(c)) {
+                    output.append(operators.pop()).append(' ');
+                }
+                operators.push(c);
+            }
+        }
+
+
+        while (!operators.isEmpty()) {
+            output.append(' ').append(operators.pop());
+        }
+
+        return output.toString();
+    }
+
+    private int precedence(char operator) {
+        switch (operator) {
+            case '+':
+            case '-':
+                return 1;
+            case '*':
+            case '/':
+                return 2;
+            case '%':
+                return 3;
+            default:
+                return -1;
+        }
+    }
+
+    private double evaluatePostfix(String postfix) {
+        Stack<Double> stack = new Stack<>();
+        String[] tokens = postfix.split(" ");
+
+        for (String token : tokens) {
+            if (token.isEmpty()) continue;
+
+            if (isNumeric(token)) {
+                stack.push(Double.parseDouble(token));
+            } else {
+                double operand2 = stack.pop();
+                double operand1 = stack.pop();
+                double result;
+
+                switch (token.charAt(0)) {
+                    case '+':
+                        result = operand1 + operand2;
+                        break;
+                    case '-':
+                        result = operand1 - operand2;
+                        break;
+                    case '*':
+                        result = operand1 * operand2;
+                        break;
+                    case '/':
+                        if (operand2 == 0) {
+                            throw new ArithmeticException("Division by zero");
+                        }
+                        result = operand1 / operand2;
+                        break;
+                    case '%':
+                        result = operand1 % operand2;
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Invalid operator");
+                }
+
+                stack.push(result);
+            }
+        }
+
+        return stack.pop();
+    }
+
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
 }
